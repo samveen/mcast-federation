@@ -1,10 +1,11 @@
 /* 
-
-agent.c
-
-Multicast agent core: Listens, receives, and sends: all in one.
-
-*/
+ * Copyright 2015, Samveen
+ * See LICENSE file for terms
+ *
+ * agent.c
+ *
+ * Multicast agent core: Listens, receives, and sends: all in one.
+ */
 
 /* The usual suspects */
 #include <stdio.h>
