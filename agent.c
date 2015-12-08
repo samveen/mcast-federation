@@ -26,15 +26,7 @@
 /* Because we're trying to make threads respond to socket events?? */
 #include <sys/epoll.h>
 
-/* Defines */
-#define MSG_MAXLEN 255
-
-/* As per https://tools.ietf.org/html/rfc5771#section-10, we can use anything in 239/8
- * so use 239.something
- */
-#define MC_GROUP "239.0.0.1"
-#define MC_PORT 6000
-
+#include "common.h"
 
 /* Create update message */
 int build_update_message(char* message, size_t maxlen) {
@@ -61,58 +53,8 @@ void send_updates(struct sockaddr_in *addr) {
     }
 }
 
-/* listen, receive */
-/* TODO: Seperate into threads with evented I/O */
-void listen_for_updates(struct sockaddr_in *addr) {
-    int sock, cnt;
-    socklen_t addrlen;
-    struct ip_mreq mreq;
-    char message[50];
-    if (bind(sock, (struct sockaddr *) addr, sizeof(*addr)) < 0) {        
-        perror("bind");
-        exit(1);
-    }    
-    mreq.imr_multiaddr.s_addr = inet_addr(MC_GROUP);         
-    mreq.imr_interface.s_addr = htonl(INADDR_ANY);         
-    if (setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                &mreq, sizeof(mreq)) < 0) {
-        perror("setsockopt mreq");
-        exit(1);
-    }         
-    while (1) {
-        cnt = recvfrom(sock, message, sizeof(message), 0, (struct sockaddr *) addr, &addrlen);
-        if (cnt < 0) {
-            perror("recvfrom");
-            exit(1);
-        } else if (cnt == 0) {
-            break;
-        }
-        printf("%s: message = \"%s\"\n", inet_ntoa(addr->sin_addr), message);
-    }
-}
-
 /* TODO: Proper structure */
 int main(int argc, char * argv[])
 {
-    struct sockaddr_in addr;
-    int addrlen, sock, cnt;
-
-    /* set up socket */
-    sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) {
-        perror("socket");
-        exit(1);
-    }
-
-    memset((void *)&addr, 0x0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = htons(MC_PORT);
-    addrlen = sizeof(addr);
-
-    /* Reuse */
-    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
-        perror("setsockopt reuse");
-        exit(1);
-    }         
+    listener((void *) NULL);
 }
