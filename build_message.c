@@ -6,7 +6,9 @@
  *
  * build_message.c
  *
- * Build messages to be published to the mcast group.
+ * Implementations of functions to 
+ * - Build messages to be published to the mcast group.
+ * - Decode messages received from mcast peers.
  */
 
 #include <curl/curl.h>
@@ -64,7 +66,7 @@ server accepts handled requests
  617 617 60616 
 Reading: 0 Writing: 1 Waiting: 1 
     */   
-    char * iter=data->stats,*start=NULL;
+    char * iter=data->stats;
     int64_t val; /* We shouldn't hit 18446744073709551615 cumulative requests anytime soon (2^64-1) */
     int count=0;
     for(int i=1; i<=7; ++i) {
@@ -106,4 +108,12 @@ int build_message(message_t * const message, const uint8_t msgtype) {
 
     data=get_nginx_stats();
     return parse_rawdata_into_message(message,data);
+}
+
+int decode_message(char * buf, size_t size, message_t * const message) {
+    if (size==sizeof(message_t)) {
+        memcpy(message, buf, size);
+        return(0);
+    } else 
+        return (-1);
 }

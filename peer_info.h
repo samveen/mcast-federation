@@ -9,10 +9,15 @@
 #ifndef __PEER_INFO_H
 #define __PEER_INFO_H 1
 
-struct peerinfo {
-    int id;
-    char data[32];
+#include <netinet/in.h>
+#include "message.h"
+
+struct peerinfo_s {
+	message_t *value;
+	struct peerinfo_s *next;
+        
+	in_addr_t key; // IPv4 Forever 
 };
 
-typedef struct peerinfo peerinfo_t;
+typedef struct peerinfo_s peerinfo_t;
 #endif
