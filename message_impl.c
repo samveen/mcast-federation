@@ -93,26 +93,34 @@ Reading: 0 Writing: 1 Waiting: 1
 
 
 /* Compose the update message */
-int build_message(message_t * const message, const uint8_t msgtype) {
+size_t build_message(message_t ** const message, const uint8_t msgtype) {
 
     rawdata_t *data=NULL;
 
     time_t ts = time(0);
 
+    if (*message==NULL)
+        *message = (message_t*) malloc(sizeof(message_t));
+
     /* Clean message */
-    memset((void *)message, 0, sizeof(message_t));
+    memset((void *)*message, 0, sizeof(message_t));
 
     /* Message properties */
-    message->mtype = msgtype;
-    message->mtimestamp = ts;
+    (*message)->mtype = msgtype;
+    (*message)->mtimestamp = ts;
 
     data=get_nginx_stats();
-    return parse_rawdata_into_message(message,data);
+    if(parse_rawdata_into_message((*message),data)==0) {
+        return (sizeof(message_t));
+    } else
+        return 0;
 }
 
-int decode_message(char * buf, size_t size, message_t * const message) {
+int decode_message(char * buf, size_t size, message_t ** const message) {
+    if (*message==NULL)
+        *message = (message_t*) malloc(sizeof(message_t));
     if (size==sizeof(message_t)) {
-        memcpy(message, buf, size);
+        memcpy(*message, buf, size);
         return(0);
     } else 
         return (-1);

@@ -21,8 +21,8 @@ struct message;
 
 typedef struct message message_t;
 
-int build_message( message_t * const, const uint8_t);
-int decode_message(char *, size_t, message_t * const);
+size_t build_message(message_t **const, const uint8_t);
+int decode_message(char *, size_t, message_t ** const);
 
 /* Actual implementation in message_impl.h:
  *

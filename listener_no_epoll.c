@@ -44,7 +44,7 @@ void listener (void *arg)
         if (rv == 0) {
             printf("Message of size %d from (host=%s, port=%s): '%s'\n", msgsize, hbuf, sbuf, buf);
         }
-        rv=decode_message(buf, msgsize, msg);
+        rv=decode_message(buf, msgsize, &msg);
         if (rv == 0)
             printf("Message decoded successfully.\n");
         else

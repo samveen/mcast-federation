@@ -1,3 +1,5 @@
 agent
+server
+client
 *.o
 test*
