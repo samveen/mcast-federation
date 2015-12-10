@@ -14,8 +14,9 @@
 #include "message_impl.h"
 
 /* send thread */
-void send_updates(struct sockaddr_in *addr) {
+void send_updates(void *arg) {
     int sock=0, cnt=0;
+    struct sockaddr_in *addr=(struct sockaddr_in *)arg;
     message_t *msg;
     msg = (message_t*) malloc(sizeof(message_t));
     socklen_t addrlen = sizeof(*addr);

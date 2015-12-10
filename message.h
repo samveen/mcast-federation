@@ -22,12 +22,13 @@ struct message;
 typedef struct message message_t;
 
 int build_message( message_t * const, const uint8_t);
+int decode_message(char *, size_t, message_t * const);
 
 /* Actual implementation in message_impl.h:
  *
  * struct message {
  *     uint8_t mtype;
- *     uint8_t padding[3]; // Future resistant (unfortunately not future proof)
+ *     uint8_t padding[7]; // Future resistant (unfortunately not future proof)
  * 
  *     time_t  mtimestamp;
  * 

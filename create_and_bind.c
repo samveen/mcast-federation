@@ -21,7 +21,7 @@ int create_and_bind () {
 
     rv = getaddrinfo (MC_GROUP, str(MC_PORT), &criteria, &mcaddrset);
     if (rv != 0) {
-      fprintf (stderr, "getaddrinfo: %rv\n", gai_strerror (rv));
+      fprintf (stderr, "getaddrinfo: %s\n", gai_strerror (rv));
       return -1;
     }
 
