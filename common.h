@@ -10,7 +10,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <netdb.h>
+
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #define MAXEVENTS 64
 
@@ -24,11 +30,11 @@
  */
 #define BUFSIZE 65507
 
-/* Max mesg len: IS this useful?? */
-#define MSG_MAXLEN 255
-
 /* Convenient conversion of constants to strings from
  * https://gcc.gnu.org/onlinedocs/cpp/Stringification.html
  */ 
 #define str(s) xstr(s)
 #define xstr(s) #s
+
+void listener (void *);
+int create_and_bind (void);
