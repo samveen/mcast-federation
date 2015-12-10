@@ -4,7 +4,7 @@
  * Thanks: 
  *     http://stackoverflow.com/questions/2329571
  *
- * build_message.c
+ * message_impl.c
  *
  * Implementations of functions to 
  * - Build messages to be published to the mcast group.
