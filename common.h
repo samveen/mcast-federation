@@ -23,7 +23,7 @@
 /* As per https://tools.ietf.org/html/rfc5771#section-10, we can use anything in 239/8
  * so use 239.something
  */
-#define MC_GROUP "239.0.0.1"
+#define MC_GROUP "224.0.0.1"
 #define MC_PORT 6000
 
 /* As per IPv4 protocol definition, max UDP packet size is as follows.
