@@ -125,3 +125,11 @@ int decode_message(char * buf, size_t size, message_t ** const message) {
     } else 
         return (-1);
 }
+
+void dump_message_to_stdout(const message_t * const message) {
+    if (message==NULL)
+	printf("Connections: %" PRId64 ", Reading: %" PRId64 ", Writing: %" PRId64 ", Waiting: %" PRId64, message->Connections, message->Reading, message->Reading, message->Waiting);
+    else
+        printf("Message is null");
+}
+

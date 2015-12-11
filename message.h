@@ -23,6 +23,7 @@ typedef struct message message_t;
 
 size_t build_message(message_t **const, const uint8_t);
 int decode_message(char *, size_t, message_t ** const);
+void dump_message_to_stdout(const message_t * const);
 
 /* Actual implementation in message_impl.h:
  *
