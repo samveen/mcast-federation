@@ -128,8 +128,14 @@ int decode_message(char * buf, size_t size, message_t ** const message) {
 
 void dump_message_to_stdout(const message_t * const message) {
     if (message!=NULL)
-	printf("Connections: %" PRId64 ", Reading: %" PRId64 ", Writing: %" PRId64 ", Waiting: %" PRId64 "\n", message->Connections, message->Reading, message->Reading, message->Waiting);
+        printf("Connections: %" PRId64 ", Reading: %" PRId64 ", Writing: %" PRId64 ", Waiting: %" PRId64 "\n", message->Connections, message->Reading, message->Reading, message->Waiting);
     else
         printf("Message is null");
+}
+
+message_t * deep_copy(const message_t * const orig) {
+    message_t * copy=(message_t *) malloc (sizeof(message_t));
+    memset(copy,orig,sizeof(message_t));
+    return(copy);
 }
 
