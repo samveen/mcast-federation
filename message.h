@@ -28,6 +28,8 @@ void dump_message_to_stdout(const message_t * const);
 message_t * deep_copy(const message_t * const);
 void deep_free(message_t * const);
 
+int64_t get_message_int64_value(const message_t* const);
+
 /* Actual implementation in message_impl.h:
  *
  * struct message {
