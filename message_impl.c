@@ -139,3 +139,6 @@ message_t * deep_copy(const message_t * const orig) {
     return(copy);
 }
 
+void deep_free(message_t * const junk) {
+    return free(junk);
+}

@@ -26,6 +26,7 @@ int decode_message(char *, size_t, message_t ** const);
 void dump_message_to_stdout(const message_t * const);
 
 message_t * deep_copy(const message_t * const);
+void deep_free(message_t * const);
 
 /* Actual implementation in message_impl.h:
  *
