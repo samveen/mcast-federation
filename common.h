@@ -30,6 +30,9 @@
  */
 #define BUFSIZE 65507
 
+/* Peer information Hash size */
+#define PEER_HASH_SIZE 128
+
 /* Convenient conversion of constants to strings from
  * https://gcc.gnu.org/onlinedocs/cpp/Stringification.html
  */ 
