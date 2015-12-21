@@ -36,5 +36,7 @@
 #define str(s) xstr(s)
 #define xstr(s) #s
 
-void listener (void *);
 int create_and_bind (void);
+void listener (void *);
+
+void publisher(void *);

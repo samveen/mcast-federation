@@ -15,7 +15,7 @@
 /* send thread */
 void publisher(void *arg) {
     int sock=0, cnt=0;
-    int msgsize=0,x=0;
+    size_t msgsize=0;
     message_t *msg=NULL;
 
     if ((sock=socket(AF_INET,SOCK_DGRAM,0)) < 0) {
