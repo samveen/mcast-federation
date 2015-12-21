@@ -126,7 +126,7 @@ void ht_set(hashtable_t *hashtable, in_addr_t key, message_t *value ) {
 }
 
 /* Retrieve a key-value pair from a hash table. */
-message_t *ht_get( hashtable_t *hashtable, in_addr_t key ) {
+const message_t * ht_get( hashtable_t *hashtable, in_addr_t key ) {
     size_t bin = 0;
     peerinfo_t *pair;
 
