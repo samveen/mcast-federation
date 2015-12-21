@@ -26,6 +26,8 @@ void listener (void *arg)
     if (sockfd == -1)
         abort ();
 
+    int waiting_room_status=WAITING_ROOM_DISABLED;
+
     struct sockaddr peer;
     socklen_t len = sizeof(peer);
     int msgsize;
@@ -62,6 +64,13 @@ void listener (void *arg)
                total+=get_message_int64_value(ht_get(messages, key.s_addr));
             }
             printf("Cluster Total: %" PRId64 "\n", total);
+            if(total>WAITING_ROOM_ENABLE_THRESHOLD && waiting_room_status==WAITING_ROOM_DISABLED) {
+                printf("Enabling waiting room");
+                waiting_room_status=WAITING_ROOM_ENABLED;
+            } else if (total<WAITING_ROOM_DISABLE_THRESHOLD && waiting_room_status==WAITING_ROOM_ENABLED) {
+                printf("Disabling waiting room");
+                waiting_room_status=WAITING_ROOM_DISABLED;
+            }
         } else
             printf("Message decoding failure.\n");
     }

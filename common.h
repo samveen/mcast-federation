@@ -33,6 +33,14 @@
 /* Peer information Hash size */
 #define PEER_HASH_SIZE 128
 
+/* Waiting room limits */
+#define WAITING_ROOM_DISABLE_THRESHOLD 5
+#define WAITING_ROOM_ENABLE_THRESHOLD 10
+
+/* Waiting room state */
+#define WAITING_ROOM_DISABLED 0
+#define WAITING_ROOM_ENABLED  1
+
 /* Convenient conversion of constants to strings from
  * https://gcc.gnu.org/onlinedocs/cpp/Stringification.html
  */ 
