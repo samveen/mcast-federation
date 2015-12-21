@@ -22,13 +22,6 @@ struct hashtable_s {
     peerinfo_t **table;
 };
 
-struct hashtable_iterator_s {
-    hashtable_t * hashtable;
-    size_t current_bin;
-    peerinfo_t * current_entry;
-    in_addr_t (*next)(hashtable_iterator_t *it);
-};
-
 struct peerinfo_s {
 	message_t *value;
 	struct peerinfo_s *next;
