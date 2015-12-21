@@ -135,7 +135,7 @@ void dump_message_to_stdout(const message_t * const message) {
 
 message_t * deep_copy(const message_t * const orig) {
     message_t * copy=(message_t *) malloc (sizeof(message_t));
-    memset(copy,orig,sizeof(message_t));
+    memcpy(copy,orig,sizeof(message_t));
     return(copy);
 }
 
