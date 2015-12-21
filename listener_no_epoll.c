@@ -56,7 +56,6 @@ void listener (void *arg)
             printf("Message decoded successfully.\n");
             dump_message_to_stdout(msg);
             ht_set(messages,key.s_addr,msg);
-            deep_free(msg);
             hashtable_iterator_t * it=get_iterator(messages);
             total=0;
             while((key.s_addr=it->next(it))!=0) {
