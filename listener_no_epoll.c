@@ -30,8 +30,9 @@ void listener (void *arg)
     char buf[BUFSIZE];
     char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
     message_t *msg=NULL;
-    hashtable_t * message_hash = ht_create(PEER_HASH_SIZE);
+    hashtable_t * messages = ht_create(PEER_HASH_SIZE);
     struct in_addr key;
+    int64_t total=0;
 
     /* The Blocking recvfrom loop */
     while (1) {
@@ -52,8 +53,14 @@ void listener (void *arg)
         if (rv == 0) {
             printf("Message decoded successfully.\n");
             dump_message_to_stdout(msg);
-            ht_set(message_hash,key.s_addr,msg);
+            ht_set(messages,key.s_addr,msg);
             deep_free(msg);
+            hashtable_iterator_t * it=get_iterator(messages);
+            total=0;
+            while((key=it->next(it))!=0) {
+               total+=get_message_int64_value(ht_get(key));
+            }
+            printf("Cluster Total: %" PRId64 "\n", total);
         } else
             printf("Message decoding failure.\n");
     }
