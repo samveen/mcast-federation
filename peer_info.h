@@ -12,12 +12,16 @@
 #include <netinet/in.h>
 #include "message.h"
 
-struct peerinfo_s {
-	message_t *value;
-	struct peerinfo_s *next;
-        
-	in_addr_t key; // IPv4 Forever 
-};
 
 typedef struct peerinfo_s peerinfo_t;
+
+typedef struct hashtable_s hashtable_t;
+
+typedef struct hashtable_iterator_s hashtable_iterator_t;
+
+hashtable_t *ht_create(size_t);
+void ht_set(hashtable_t *, in_addr_t, message_t *);
+message_t *ht_get(hashtable_t *, in_addr_t);
+
+hashtable_iterator_t * get_iterator(hashtable_t*);
 #endif
