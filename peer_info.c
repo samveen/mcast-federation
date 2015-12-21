@@ -62,7 +62,7 @@ size_t ht_hash( hashtable_t *hashtable, in_addr_t key ) {
 }
 
 /* Create a key-value pair. */
-peerinfo_t *ht_newpair(in_addr_t key, message_t *value ) {
+peerinfo_t *ht_newpair(in_addr_t key, const message_t * const value ) {
     peerinfo_t *newpair;
 
     if( ( newpair = malloc( sizeof( peerinfo_t ) ) ) == NULL ) {
@@ -77,7 +77,7 @@ peerinfo_t *ht_newpair(in_addr_t key, message_t *value ) {
 }
 
 /* Insert a key-value pair into a hash table. */
-void ht_set(hashtable_t *hashtable, in_addr_t key, message_t *value ) {
+void ht_set(hashtable_t *hashtable, in_addr_t key, const message_t * const value) {
     size_t bin = 0;
     peerinfo_t *newpair = NULL;
     peerinfo_t *next = NULL;
@@ -92,7 +92,7 @@ void ht_set(hashtable_t *hashtable, in_addr_t key, message_t *value ) {
         next = next->next;
     }
 
-    /* There's already a pair.  Let's replace that string. */
+    /* There's already a pair.  Let's replace that value. */
     if( next != NULL && key == next->key ) {
 
         deep_free(next->value); // We always use local copies

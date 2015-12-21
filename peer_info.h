@@ -27,7 +27,7 @@ struct hashtable_iterator_s {
 };
 
 hashtable_t *ht_create(size_t);
-void ht_set(hashtable_t *, in_addr_t, message_t *);
+void ht_set(hashtable_t *, in_addr_t, const message_t *const);
 const message_t * ht_get(hashtable_t *, in_addr_t);
 
 hashtable_iterator_t * get_iterator(hashtable_t*);
