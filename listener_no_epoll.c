@@ -12,6 +12,8 @@
 #include <sys/epoll.h>
 #include <errno.h>
 
+#include <inttypes.h>
+
 #include "message.h"
 #include "peer_info.h"
 
@@ -57,8 +59,8 @@ void listener (void *arg)
             deep_free(msg);
             hashtable_iterator_t * it=get_iterator(messages);
             total=0;
-            while((key=it->next(it))!=0) {
-               total+=get_message_int64_value(ht_get(key));
+            while((key.s_addr=it->next(it))!=0) {
+               total+=get_message_int64_value(ht_get(messages, key.s_addr));
             }
             printf("Cluster Total: %" PRId64 "\n", total);
         } else
