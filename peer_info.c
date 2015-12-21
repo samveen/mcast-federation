@@ -23,9 +23,10 @@ struct hashtable_s {
 };
 
 struct hashtable_iterator_s {
-    hashtable_t * table;
+    hashtable_t * hashtable;
     size_t current_bin;
     peerinfo_t * current_entry;
+    in_addr_t (*next)(hashtable_iterator_t *it);
 };
 
 struct peerinfo_s {
@@ -147,6 +148,32 @@ const message_t * ht_get( hashtable_t *hashtable, in_addr_t key ) {
 
 }
 
+in_addr_t get_next_key(hashtable_iterator_t* it) {
+    in_addr_t key;
+    if(it->current_entry!=NULL) {
+        key=it->current_entry->key;
+        it->current_entry=it->current_entry->next;
+        return(key);
+    } else if (it->current_bin < it->hashtable->size) {
+        ++(it->current_bin);
+        it->current_entry=it->hashtable->table[it->current_bin];
+        return get_next_key(it);
+    } else
+        return 0;
+}
+
+hashtable_iterator_t * get_iterator(hashtable_t* hashtable) {
+    hashtable_iterator_t *it;
+    if( ( it = malloc(sizeof(hashtable_iterator_t)) ) == NULL ) {
+        return NULL;
+    }
+    it->hashtable=hashtable;
+    it->current_bin=0;
+    it->current_entry=it->hashtable->table[it->current_bin];
+    it->next=get_next_key;
+
+    return (it);
+}
 
 /*int main( int argc, char **argv ) {
 
