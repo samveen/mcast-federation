@@ -1,1 +1,4 @@
 * Timestamping and invalidation of old messages
+* Create Makefile.am and configure.am
+* Implement Leader election.
+* Implement Leader functionality.
