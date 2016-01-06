@@ -46,10 +46,11 @@ void sighandler(int signum, siginfo_t *info, void *data)
 {
     int status;
 
-    fprintf(stderr, "Signal %d received from (%d)\n", signum, info->si_pid);
+    write(STDERR_FILENO, "Signal received :", sizeof("Signal received :"));
 
     switch(signum) {
         case SIGCHLD:
+            write(STDERR_FILENO, "SIGCHLD.\n", sizeof("SIGCHLD.\n"));
             if (info->si_pid==pidl) {
                 waitpid(pidl,&status,WNOHANG);
                 pidl=0;
@@ -59,10 +60,10 @@ void sighandler(int signum, siginfo_t *info, void *data)
             }
             break;
         case SIGHUP:
-            fprintf(stderr, "Doing something\n");
+            write(STDERR_FILENO, "SIGHUP.\n", sizeof("SIGHUP.\n"));
             break;
         default:
-            fprintf(stderr, "Unhandled signale\n");
+            write(STDERR_FILENO, "Unhandled signal.\n", sizeof("Unhandled signal.\n"));
     }
 }
 
