@@ -106,6 +106,8 @@ int main(int argc, char * argv[])
                 memcpy(argv[0], "agent:Listener",sizeof("agent:Listener"));
                 // Receiver
                 listener((void *) NULL);
+                printf("Listener Exiting\n");
+                return(0);
             }
 
         }
@@ -122,6 +124,8 @@ int main(int argc, char * argv[])
 
                 /* Global cleanup */
                 curl_global_cleanup();
+                printf("Publisher Exiting\n");
+                return(0);
             }
         }
         pause();
