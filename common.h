@@ -44,8 +44,8 @@
 #define WAITING_ROOM_CONFIGURATION_URL "http://nginx-status.localhost/waiting_room_config"
 
 /* Waiting room state changing commands */
-#define WAITING_ROOM_DISABLE_COMMAND "curl --data-ascii 'disable;' -H 'Content-type: text/plain;'  http://nginx-status.localhost/waiting_room_config"
-#define WAITING_ROOM_ENABLE_COMMAND  "curl --data-ascii 'enable;'  -H 'Content-type: text/plain;'  http://nginx-status.localhost/waiting_room_config"
+//#define WAITING_ROOM_DISABLE_COMMAND "curl --data-ascii 'disable;' -H 'Content-type: text/plain;'  http://nginx-status.localhost/waiting_room_config"
+//#define WAITING_ROOM_ENABLE_COMMAND  "curl --data-ascii 'enable;'  -H 'Content-type: text/plain;'  http://nginx-status.localhost/waiting_room_config"
 
 
 /* Convenient conversion of constants to strings from
