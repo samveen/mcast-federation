@@ -16,6 +16,7 @@
 
 #include "message.h"
 #include "peer_info.h"
+#include "trigger_waiting_room.h"
 
 /* listen, receive */
 void listener (void *arg)
@@ -67,11 +68,11 @@ void listener (void *arg)
             if(total>WAITING_ROOM_ENABLE_THRESHOLD && waiting_room_status==WAITING_ROOM_DISABLED) {
                 printf("Enabling waiting room\n");
                 waiting_room_status=WAITING_ROOM_ENABLED;
-                system(WAITING_ROOM_ENABLE_COMMAND);
+                enable_waiting_room();
             } else if (total<WAITING_ROOM_DISABLE_THRESHOLD && waiting_room_status==WAITING_ROOM_ENABLED) {
                 printf("Disabling waiting room\n");
                 waiting_room_status=WAITING_ROOM_DISABLED;
-                system(WAITING_ROOM_DISABLE_COMMAND);
+                disable_waiting_room();
             }
         } else
             printf("Message decoding failure.\n");

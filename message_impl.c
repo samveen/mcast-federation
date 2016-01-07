@@ -20,22 +20,7 @@
 #include "message.h"
 #include "message_impl.h"
 
-/* shared data def */
-typedef struct {
-    char *end;
-    char stats[STATS_MAXLEN];
-} rawdata_t;
-
-size_t update_mycurl_data(void *buffer, size_t size, size_t nmemb, rawdata_t *data) {
-    /* Init data->end on first run*/
-    if (data->end == NULL) 
-        data->end=data->stats;
-
-    memcpy(data->end, buffer, size*nmemb);
-    data->end += size*nmemb;
-    *(data->end) = '\0';
-    return size*nmemb;
-}
+# include "curl_data.h"
 
 rawdata_t* get_nginx_stats(void) {
     /* Message data */
@@ -46,7 +31,7 @@ rawdata_t* get_nginx_stats(void) {
     curl = curl_easy_init();
     if(curl) {
         data=malloc(sizeof(rawdata_t));
-        memset((void *)data, 0, sizeof(rawdata_t));
+        memset((char *)data, 0, sizeof(rawdata_t));
 
         curl_easy_setopt(curl, CURLOPT_URL, NGINX_STUBSTATS_URL);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, update_mycurl_data);
@@ -66,7 +51,7 @@ server accepts handled requests
  617 617 60616 
 Reading: 0 Writing: 1 Waiting: 1 
     */   
-    char * iter=data->stats;
+    char * iter=data->buffer;
     int64_t val; /* We shouldn't hit 18446744073709551615 cumulative requests anytime soon (2^64-1) */
     int count=0;
     for(int i=1; i<=7; ++i) {
