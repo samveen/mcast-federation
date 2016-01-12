@@ -77,7 +77,7 @@ void init_signals(void)
     memset(&sa,0,sizeof(struct sigaction));
     sigemptyset(&sa.sa_mask);
 
-	sa.sa_flags = SA_SIGINFO;
+	sa.sa_flags = SA_SIGINFO|SA_RESTART;
     sa.sa_sigaction = sighandler;
 
     for (int * i=signals ; (*i)!=0 ; ++i ) {
