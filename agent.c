@@ -34,42 +34,73 @@
 
 #include "common.h"
 
+
+uint8_t whoami;
+
 /* PIDs for signalling  */
 pid_t supervisor; /* set once in parent via getpid instead of getppid in every child*/
 pid_t pidl=0, pidp=0; /* for supervisor to signale children */
 
 /* signaling variable: Set by signal handlers */
 uint8_t state;
+
 /* NO BACKGROUNDING, OR CLOSING OF STREAMS */
 
 void sighandler(int signum, siginfo_t *info, void *data)
 {
     int status;
 
-    write(STDERR_FILENO, "Signal received :", sizeof("Signal received :"));
+    switch(whoami) {
+        case MONITOR:
+            write(STDERR_FILENO, "Signal received :", sizeof("Signal received :"));
 
-    switch(signum) {
-        case SIGCHLD:
-            write(STDERR_FILENO, "SIGCHLD.\n", sizeof("SIGCHLD.\n"));
-            if (info->si_pid==pidl) {
-                waitpid(pidl,&status,WNOHANG);
-                pidl=0;
-            } else if (info->si_pid==pidp) {
-                waitpid(pidp,&status,WNOHANG);
-                pidp = 0;
+            switch(signum) {
+                case SIGCHLD:
+                    write(STDERR_FILENO, "SIGCHLD.\n", sizeof("SIGCHLD.\n"));
+                    if (info->si_pid==pidl) {
+                        waitpid(pidl,&status,WNOHANG);
+                        pidl=0;
+                    } else if (info->si_pid==pidp) {
+                        waitpid(pidp,&status,WNOHANG);
+                        pidp = 0;
+                    }
+                    break;
+                case SIGHUP:
+                    write(STDERR_FILENO, "SIGHUP.\n", sizeof("SIGHUP.\n"));
+                    break;
+                case SIGUSR1:
+                    break;
+                case SIGUSR2:
+                    kill(pidp,SIGUSR2);
+                    break;
+                default:
+                    write(STDERR_FILENO, "Unhandled signal.\n", sizeof("Unhandled signal.\n"));
             }
             break;
-        case SIGHUP:
-            write(STDERR_FILENO, "SIGHUP.\n", sizeof("SIGHUP.\n"));
+
+        case LISTENER:
+            switch(signum) {
+                case SIGUSR1:
+                state=STATE_NORMAL;  // FIXME
+                break;
+            }
             break;
-        default:
-            write(STDERR_FILENO, "Unhandled signal.\n", sizeof("Unhandled signal.\n"));
+
+        case PUBLISHER:
+            switch(signum) {
+                case SIGUSR1:
+                    state=STATE_KILLME;
+                    break;
+                case SIGUSR2:
+                    break;
+            }
+            break;
     }
 }
 
 void init_signals(void)
 {
-    int signals[] = { SIGHUP, SIGCHLD, 0 };
+    int signals[] = { SIGHUP, SIGCHLD, SIGUSR1, SIGUSR2, 0 };
     state=1;
 
     struct sigaction sa;
@@ -83,7 +114,7 @@ void init_signals(void)
     for (int * i=signals ; (*i)!=0 ; ++i ) {
         if (sigaction((*i), &sa, NULL) == -1) {
             fprintf(stderr, "sigaction failed on signal (%d)", (*i));
-            return -1;
+            return;
         }
     }
 }
@@ -94,6 +125,7 @@ int main(int argc, char * argv[])
      * FIXIT: We don't do any configurtion other than build time.
      */
     supervisor=getpid();
+    whoami=MONITOR;
 
     init_signals();
 
@@ -102,6 +134,8 @@ int main(int argc, char * argv[])
     while(state) {
         if(pidl == 0) { // We dont have a listener pid or it's dead
             if ((pidl=fork())==0) {
+                whoami=LISTENER;
+                state=STATE_NEWBIE;
                 prctl(PR_SET_NAME, "agent:Listener",0,0,0);
                 memcpy(argv[0], "agent:Listener",sizeof("agent:Listener"));
                 // Receiver
@@ -115,6 +149,8 @@ int main(int argc, char * argv[])
         if(pidp == 0) { // We dont have a publisher pid or it's dead.
             if ((pidp=fork())==0) {
                 // Publisher
+                whoami=PUBLISHER;
+                state=STATE_NORMAL;
                 prctl(PR_SET_NAME, "agent:Publisher",0,0,0);
                 memcpy(argv[0], "agent:Publisher",sizeof("agent:Publisher"));
                 /* Global init */

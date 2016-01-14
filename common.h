@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -17,6 +18,11 @@
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
+#define MONITOR 1u
+#define LISTENER 2u
+#define PUBLISHER 4u
+
 
 #define MAXEVENTS 64
 
@@ -47,6 +53,15 @@
 //#define WAITING_ROOM_DISABLE_COMMAND "curl --data-ascii 'disable;' -H 'Content-type: text/plain;'  http://nginx-status.localhost/waiting_room_config"
 //#define WAITING_ROOM_ENABLE_COMMAND  "curl --data-ascii 'enable;'  -H 'Content-type: text/plain;'  http://nginx-status.localhost/waiting_room_config"
 
+/* Process state */
+#define STATE_QUIT   0u
+#define STATE_NEWBIE 1u
+#define STATE_NORMAL 2u
+#define STATE_KILLME 4u
+#define STATE_MASTER 16u
+
+extern uint8_t state;
+
 
 /* Convenient conversion of constants to strings from
  * https://gcc.gnu.org/onlinedocs/cpp/Stringification.html
@@ -54,7 +69,18 @@
 #define str(s) xstr(s)
 #define xstr(s) #s
 
-int create_and_bind (void);
-void listener (void *);
+/* Who's your Daddy */
+extern pid_t supervisor;
 
-void publisher(void *);
+/* Cluster state */
+extern uint32_t greatest_cluster_size;
+extern uint32_t current_cluster_size;
+
+ /* Determine who's master */
+extern uint32_t mastery_rank; // my rank
+extern uint32_t cluster_master;
+
+int create_and_bind (void);
+int listener (void *);
+
+int publisher(void *);

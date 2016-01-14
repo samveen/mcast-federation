@@ -18,14 +18,23 @@
 #include "peer_info.h"
 #include "trigger_waiting_room.h"
 
+/* Determine who's master (Thank you, Warframe) */
+/* The live agent with the largest mastery rank is the master. must mark itself as such */
+uint32_t mastery_rank;
+
+/* Cluster master */
+uint32_t cluster_master;
+
+
 /* listen, receive */
-void listener (void *arg)
+int listener (void *arg)
 {
     int sockfd, rv;
+    uint32_t mr;
 
     sockfd = create_and_bind ();
     if (sockfd == -1)
-        abort ();
+        return(-1);
 
     int waiting_room_status=WAITING_ROOM_DISABLED;
 
@@ -40,7 +49,7 @@ void listener (void *arg)
     int64_t total=0;
 
     /* The Blocking recvfrom loop */
-    while (1) {
+    do {
         msgsize = recvfrom(sockfd, buf, BUFSIZE, 0, (struct sockaddr *)&peer, (socklen_t *)&len);
         if (msgsize < 0) {
             perror("recvfrom");
@@ -57,26 +66,42 @@ void listener (void *arg)
         rv=decode_message(buf, msgsize, &msg);
         if (rv == 0) {
             printf("Message decoded successfully.\n");
-            dump_message_to_stdout(msg);
-            ht_set(messages,key.s_addr,msg);
+            //dump_message_to_stdout(msg);
+            switch(get_message_type(msg)) {
+                case MSG_NEWBIE: // Same as update,(with bonus content)
+                    kill(supervisor, SIGUSR2);
+                case MSG_UPDATE:
+                    ht_set(messages,key.s_addr,msg);
+                    mr=get_message_mastery(msg);
+                    if(mr>cluster_master) /* determing master */
+                        cluster_master=mr;
+                    break;
+                case MSG_WR_ON:
+                    printf("Message WR_ON: Enabling waiting room\n");
+                    waiting_room_status=WAITING_ROOM_ENABLED;
+                    enable_waiting_room();
+                    break;
+                case MSG_WR_OFF:
+                    printf("Message WR_OFF: Disabling waiting room\n");
+                    waiting_room_status=WAITING_ROOM_DISABLED;
+                    disable_waiting_room();
+                    break;
+            }
+
+        } else
+            printf("Message decoding failure.\n");
+
+        /* We got a message (valid/invalid, no matter */
+        if(mastery_rank==cluster_master) {
             hashtable_iterator_t * it=get_iterator(messages);
             total=0;
             while((key.s_addr=it->next(it))!=0) {
-               total+=get_message_int64_value(ht_get(messages, key.s_addr));
+                total+=get_message_int64_value(ht_get(messages, key.s_addr));
             }
             printf("Cluster Total: %" PRId64 "\n", total);
-            if(total>WAITING_ROOM_ENABLE_THRESHOLD && waiting_room_status==WAITING_ROOM_DISABLED) {
-                printf("Enabling waiting room\n");
-                waiting_room_status=WAITING_ROOM_ENABLED;
-                enable_waiting_room();
-            } else if (total<WAITING_ROOM_DISABLE_THRESHOLD && waiting_room_status==WAITING_ROOM_ENABLED) {
-                printf("Disabling waiting room\n");
-                waiting_room_status=WAITING_ROOM_DISABLED;
-                disable_waiting_room();
-            }
-        } else
-            printf("Message decoding failure.\n");
-    }
+        }
+    } while (1);
 
     close (sockfd);
+    return (0);
 }

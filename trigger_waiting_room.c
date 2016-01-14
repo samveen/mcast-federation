@@ -13,7 +13,7 @@
 #include "trigger_waiting_room.h"
 #include "common.h"
 
-set_waiting_room_state(const char * command, const char * expected_result)
+int set_waiting_room_state(const char * command, const char * expected_result)
 {
     int val=0;
     struct curl_slist *headers=NULL;

@@ -31,6 +31,9 @@
 
 #include "common.h"
 
+uint8_t state;
+pid_t supervisor;
+
 int main(int argc, char * argv[])
 {
     /* We don't do parameters. Maybe that'll change in the future

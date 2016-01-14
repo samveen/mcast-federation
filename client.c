@@ -33,6 +33,8 @@
 
 pthread_t listener_thread, publisher_thread;
 
+uint8_t state;
+
 int main(int argc, char * argv[])
 {
     /* We don't do parameters. Maybe that'll change in the future

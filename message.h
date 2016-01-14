@@ -15,6 +15,9 @@
 
 #define MSG_NEWBIE 1u
 #define MSG_UPDATE 2u
+#define MSG_WR_ON  4u
+#define MSG_WR_OFF 8u
+#define MSG_I_DIED 16u
 
 /* Forward declaration */
 struct message;
@@ -27,6 +30,9 @@ void dump_message_to_stdout(const message_t * const);
 
 message_t * deep_copy(const message_t * const);
 void deep_free(message_t * const);
+
+uint8_t get_message_type(const message_t * const);
+uint32_t get_message_mastery(const message_t* const);
 
 int64_t get_message_int64_value(const message_t* const);
 

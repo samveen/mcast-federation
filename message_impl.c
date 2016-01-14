@@ -111,6 +111,14 @@ int decode_message(char * buf, size_t size, message_t ** const message) {
         return (-1);
 }
 
+uint8_t get_message_type(const message_t * const msg) {
+    return (msg->mtype);
+}
+
+uint32_t get_message_mastery(const message_t* const msg) {
+    return (msg->mastery);
+}
+
 int64_t get_message_int64_value(const message_t* const msg) {
     return (msg->Connections);
 }

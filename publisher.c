@@ -12,15 +12,19 @@
 
 #include "message.h"
 
+/* */
+int newbie=1;
+unsigned int a_little_bit=10;
+
 /* send thread */
-void publisher(void *arg) {
+int publisher(void *arg) {
     int sock=0, cnt=0;
     size_t msgsize=0;
     message_t *msg=NULL;
 
     if ((sock=socket(AF_INET,SOCK_DGRAM,0)) < 0) {
         perror("socket");
-        return;
+        return(-1);
     }
    
     struct sockaddr_in addr;
@@ -31,15 +35,27 @@ void publisher(void *arg) {
     addr.sin_addr.s_addr=inet_addr(MC_GROUP);
     addr.sin_port=htons(MC_PORT);
 
-    while (1) {
+    /* First: newbie message */
+    msgsize = build_message(&msg, MSG_NEWBIE);
+    cnt = sendto(sock,msg,msgsize,0,(struct sockaddr *) &addr,sizeof(addr));
+    if (cnt < 0) {
+        perror("sendto");
+        return(-2);
+    }
+    printf("message of %zd bytes published\n",msgsize);
+    sleep(a_little_bit);
+
+    /* Updates */
+    do {
         msgsize = build_message(&msg, MSG_UPDATE);
         cnt = sendto(sock,msg,msgsize,0,(struct sockaddr *) &addr,sizeof(addr));
         if (cnt < 0) {
             perror("sendto");
-            exit(1);
+            return(-2);
         }
         printf("message of %zd bytes published\n",msgsize);
-        sleep(10);
-    }
+        sleep(a_little_bit);
+    } while (state);
+    return(0);
 }
 

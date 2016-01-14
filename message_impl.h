@@ -19,7 +19,9 @@
 
 struct message {
     uint8_t mtype;
-    uint8_t padding[7]; /* Future resistant (unfortunately not future proof)*/
+    uint8_t padding[3]; /* Future resistant (unfortunately not future proof) */
+
+    uint32_t mastery;
 
     time_t  mtimestamp;
 
