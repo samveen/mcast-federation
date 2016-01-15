@@ -45,7 +45,7 @@ int set_waiting_room_state(const char * command, const char * expected_result)
 
     curl_easy_cleanup(handle);
 
-    val=strncmp(data.buffer,expected_result,sizeof(expected_result));
+    val=strncmp(data.buffer,expected_result,strlen(expected_result));
 
     return (val);
 }
