@@ -92,6 +92,7 @@ size_t build_message(message_t ** const message, const uint8_t msgtype) {
 
     /* Message properties */
     (*message)->mtype = msgtype;
+    (*message)->mastery = mastery_rank;
     (*message)->mtimestamp = ts;
 
     data=get_nginx_stats();

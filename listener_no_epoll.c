@@ -95,6 +95,7 @@ int listener (void *arg)
             }
         } else
             printf("Message decoding failure.\n");
+        printf("Master('%u') and  I('%u').\n",cluster_master,mastery_rank);
 
         /* We got a message (valid/invalid, no matter */
         if(mastery_rank==cluster_master) {
