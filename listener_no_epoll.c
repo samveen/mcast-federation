@@ -78,13 +78,17 @@ int listener (void *arg)
                     break;
                 case MSG_WR_ON:
                     printf("Message WR_ON: Enabling waiting room\n");
-                    waiting_room_status=WAITING_ROOM_ENABLED;
-                    enable_waiting_room();
+                    if (waiting_room_status!=WAITING_ROOM_ENABLED) {
+                        waiting_room_status=WAITING_ROOM_ENABLED;
+                        enable_waiting_room();
+                    }
                     break;
                 case MSG_WR_OFF:
                     printf("Message WR_OFF: Disabling waiting room\n");
-                    waiting_room_status=WAITING_ROOM_DISABLED;
-                    disable_waiting_room();
+                    if(waiting_room_status!=WAITING_ROOM_DISABLED) {
+                        waiting_room_status=WAITING_ROOM_DISABLED;
+                        disable_waiting_room();
+                    }
                     break;
             }
 
