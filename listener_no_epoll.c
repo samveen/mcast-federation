@@ -60,38 +60,39 @@ int listener (void *arg)
                           sbuf, sizeof sbuf,
                           NI_NUMERICHOST | NI_NUMERICSERV);
         if (rv == 0) {
-            printf("Message of size %d from (host=%s, port=%s): '%s'\n", msgsize, hbuf, sbuf, buf);
+            printf("Message of size %d from (host=%s, port=%s)\n", msgsize, hbuf, sbuf);
             inet_pton(AF_INET, hbuf, (void *)&key);
         }
         rv=decode_message(buf, msgsize, &msg);
         if (rv == 0) {
-            printf("Message decoded successfully.\n");
+            printf("Message decoded successfully: Message ");
             //dump_message_to_stdout(msg);
             switch(get_message_type(msg)) {
                 case MSG_NEWBIE: // Same as update,(with bonus content)
+                    printf("NEWBIE/");
                     kill(supervisor, SIGUSR2);
                 case MSG_UPDATE:
+                    printf("UPDATE\n");
                     ht_set(messages,key.s_addr,msg);
                     mr=get_message_mastery(msg);
                     if(mr>cluster_master) /* determing master */
                         cluster_master=mr;
                     break;
                 case MSG_WR_ON:
-                    printf("Message WR_ON: Enabling waiting room\n");
+                    printf("WR_ON: Enabling waiting room\n");
                     if (waiting_room_status!=WAITING_ROOM_ENABLED) {
                         waiting_room_status=WAITING_ROOM_ENABLED;
                         enable_waiting_room();
                     }
                     break;
                 case MSG_WR_OFF:
-                    printf("Message WR_OFF: Disabling waiting room\n");
+                    printf("WR_OFF: Disabling waiting room\n");
                     if(waiting_room_status!=WAITING_ROOM_DISABLED) {
                         waiting_room_status=WAITING_ROOM_DISABLED;
                         disable_waiting_room();
                     }
                     break;
             }
-
         } else
             printf("Message decoding failure.\n");
 
