@@ -129,6 +129,9 @@ int main(int argc, char * argv[])
 
     init_signals();
 
+    // Set initial mastery.
+    mastery_rank=urandom();
+
     prctl(PR_SET_NAME, "agent:Monitor",0,0,0);
     memcpy(argv[0], "agent:Monitor",sizeof("agent:Monitor"));
     while(state) {
