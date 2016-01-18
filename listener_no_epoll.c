@@ -75,6 +75,7 @@ int listener (void *arg)
                     printf("UPDATE\n");
                     ht_set(messages,key.s_addr,msg);
                     mr=get_message_mastery(msg);
+                    printf("Master(%u), Him('%u') and I('%u').\n",cluster_master,mr,mastery_rank);
                     if(mr>cluster_master) /* determing master */
                         cluster_master=mr;
                     break;
