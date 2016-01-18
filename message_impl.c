@@ -95,11 +95,17 @@ size_t build_message(message_t ** const message, const uint8_t msgtype) {
     (*message)->mastery = mastery_rank;
     (*message)->mtimestamp = ts;
 
-    data=get_nginx_stats();
-    if(parse_rawdata_into_message((*message),data)==0) {
-        return (sizeof(message_t));
-    } else
-        return 0;
+    switch (msgtype) {
+        case MSG_NEWBIE:
+        case MSG_UPDATE:
+            data=get_nginx_stats();
+            if(parse_rawdata_into_message((*message),data)!=0)
+                break;
+        case MSG_WR_ON:
+        case MSG_WR_OFF:
+            return (sizeof(message_t));
+    }
+    return 0;
 }
 
 int decode_message(char * buf, size_t size, message_t ** const message) {

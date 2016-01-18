@@ -49,6 +49,8 @@ uint8_t state;
 void sighandler(int signum, siginfo_t *info, void *data)
 {
     int status;
+    union sigval sig_value;
+    sig_value.sival_int=0;
 
     switch(whoami) {
         case MONITOR:
@@ -74,7 +76,16 @@ void sighandler(int signum, siginfo_t *info, void *data)
                     kill(pidp,SIGUSR2);
                     break;
                 default:
-                    write(STDERR_FILENO, "Unhandled signal.\n", sizeof("Unhandled signal.\n"));
+                    switch(signum-SIGRTMIN) {
+                        case 5:
+                            sigqueue(pidp,SIGRTMIN+5,sig_value);
+                            break;
+                        case 6:
+                            sigqueue(pidp,SIGRTMIN+6,sig_value);
+                            break;
+                        default:
+                            write(STDERR_FILENO, "Unhandled signal.\n", sizeof("Unhandled signal.\n"));
+                    }
             }
             break;
 
@@ -93,6 +104,15 @@ void sighandler(int signum, siginfo_t *info, void *data)
                     break;
                 case SIGUSR2:
                     break;
+                default:
+                    switch(signum-SIGRTMIN) {
+                        case 5:
+                            state=STATE_ENABLEWR;
+                            break;
+                        case 6:
+                            state=STATE_DISABLEWR;
+                            break;
+                    }
             }
             break;
     }
@@ -100,7 +120,7 @@ void sighandler(int signum, siginfo_t *info, void *data)
 
 void init_signals(void)
 {
-    int signals[] = { SIGHUP, SIGCHLD, SIGUSR1, SIGUSR2, 0 };
+    int signals[] = { SIGHUP, SIGCHLD, SIGUSR1, SIGUSR2, SIGRTMIN+5, SIGRTMIN+6,0 };
     state=1;
 
     struct sigaction sa;
@@ -129,8 +149,9 @@ int main(int argc, char * argv[])
 
     init_signals();
 
-    // Set initial mastery.
-    mastery_rank=urandom();
+    // Parse parameters
+    parse_options(argc, argv);
+    exit(0);
 
     prctl(PR_SET_NAME, "agent:Monitor",0,0,0);
     memcpy(argv[0], "agent:Monitor",sizeof("agent:Monitor"));

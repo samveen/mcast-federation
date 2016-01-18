@@ -47,7 +47,18 @@ int publisher(void *arg) {
 
     /* Updates */
     do {
-        msgsize = build_message(&msg, MSG_UPDATE);
+        switch (state) {
+            case STATE_ENABLEWR:
+                msgsize = build_message(&msg, MSG_WR_ON);
+                state=STATE_NORMAL;
+                break;
+            case STATE_DISABLEWR:
+                msgsize = build_message(&msg, MSG_WR_OFF);
+                state=STATE_NORMAL;
+                break;
+            case STATE_NORMAL:
+                msgsize = build_message(&msg, MSG_UPDATE);
+        }
         cnt = sendto(sock,msg,msgsize,0,(struct sockaddr *) &addr,sizeof(addr));
         if (cnt < 0) {
             perror("sendto");

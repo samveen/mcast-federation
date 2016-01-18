@@ -25,6 +25,9 @@ uint32_t mastery_rank;
 /* Cluster master */
 uint32_t cluster_master;
 
+/* Waiting room limits */
+uint64_t wr_disable_threshold;
+uint64_t wr_enable_threshold;
 
 /* listen, receive */
 int listener (void *arg)
@@ -46,7 +49,7 @@ int listener (void *arg)
     message_t *msg=NULL;
     hashtable_t * messages = ht_create(PEER_HASH_SIZE);
     struct in_addr key;
-    int64_t total=0;
+    uint64_t total, count;
 
     /* The Blocking recvfrom loop */
     do {
@@ -102,10 +105,19 @@ int listener (void *arg)
         if(mastery_rank==cluster_master) {
             hashtable_iterator_t * it=get_iterator(messages);
             total=0;
+            count=0;
             while((key.s_addr=it->next(it))!=0) {
                 total+=get_message_int64_value(ht_get(messages, key.s_addr));
+                ++count;
             }
-            printf("Cluster Total: %" PRId64 "\n", total);
+            printf("Cluster Average: %" PRId64 "\n", (total/count));
+            if(waiting_room_status!=WAITING_ROOM_DISABLED && (total/count)>=wr_enable_threshold) {
+                printf("Send Enable message\n");
+                kill(supervisor, SIGRTMIN+5);
+            } else if (waiting_room_status!=WAITING_ROOM_ENABLED && (total/count)<=wr_disable_threshold) {
+                printf("Send Disable message\n");
+                kill(supervisor, SIGRTMIN+6);
+            }
         }
     } while (1);
 

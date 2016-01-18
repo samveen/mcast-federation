@@ -40,6 +40,8 @@
 #define PEER_HASH_SIZE 128
 
 /* Waiting room limits */
+extern uint64_t wr_disable_threshold;
+extern uint64_t wr_enable_threshold;
 #define WAITING_ROOM_DISABLE_THRESHOLD 5
 #define WAITING_ROOM_ENABLE_THRESHOLD 10
 
@@ -58,7 +60,9 @@
 #define STATE_NEWBIE 1u
 #define STATE_NORMAL 2u
 #define STATE_KILLME 4u
-#define STATE_MASTER 16u
+#define STATE_ENABLEWR 8u
+#define STATE_DISABLEWR 16u
+#define STATE_MASTER 128u
 
 extern uint8_t state;
 
