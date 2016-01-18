@@ -151,7 +151,6 @@ int main(int argc, char * argv[])
 
     // Parse parameters
     parse_options(argc, argv);
-    exit(0);
 
     prctl(PR_SET_NAME, "agent:Monitor",0,0,0);
     memcpy(argv[0], "agent:Monitor",sizeof("agent:Monitor"));
