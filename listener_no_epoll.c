@@ -111,10 +111,10 @@ int listener (void *arg)
                 ++count;
             }
             printf("Cluster Average: %" PRId64 "\n", (total/count));
-            if(waiting_room_status!=WAITING_ROOM_DISABLED && (total/count)>=wr_enable_threshold) {
+            if(waiting_room_status==WAITING_ROOM_DISABLED && (total/count)>=wr_enable_threshold) {
                 printf("Send Enable message\n");
                 kill(supervisor, SIGRTMIN+5);
-            } else if (waiting_room_status!=WAITING_ROOM_ENABLED && (total/count)<=wr_disable_threshold) {
+            } else if (waiting_room_status==WAITING_ROOM_ENABLED && (total/count)<=wr_disable_threshold) {
                 printf("Send Disable message\n");
                 kill(supervisor, SIGRTMIN+6);
             }
