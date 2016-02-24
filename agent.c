@@ -33,6 +33,7 @@
 #include <curl/curl.h>
 
 #include "common.h"
+#include "options.h"
 
 
 uint8_t whoami;

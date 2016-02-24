@@ -82,7 +82,7 @@ size_t build_message(message_t ** const message, const uint8_t msgtype) {
 
     rawdata_t *data=NULL;
 
-    time_t ts = time(0);
+    time_t ts = time(NULL);
 
     if (*message==NULL)
         *message = (message_t*) malloc(sizeof(message_t));

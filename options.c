@@ -1,3 +1,12 @@
+/* 
+ * Copyright 2015, Samveen
+ * See LICENSE file for terms
+ *
+ * options.c
+ *
+ * Command line option handling code
+ */
+
 #include <getopt.h>
 #include <stdlib.h>
 #include <inttypes.h>
