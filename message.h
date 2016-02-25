@@ -33,6 +33,7 @@ void deep_free(message_t * const);
 
 uint8_t get_message_type(const message_t * const);
 uint32_t get_message_mastery(const message_t* const);
+time_t get_message_timestamp(const message_t* const);
 
 int64_t get_message_int64_value(const message_t* const);
 
