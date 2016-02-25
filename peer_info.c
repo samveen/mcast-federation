@@ -76,6 +76,11 @@ peerinfo_t *ht_newpair(in_addr_t key, const message_t * const value ) {
     return newpair;
 }
 
+void ht_crushpair(peerinfo_t *pair) {
+    deep_free(pair->value);  // We always use local copies
+    free(pair);
+}
+
 /* Insert a key-value pair into a hash table. */
 void ht_set(hashtable_t *hashtable, in_addr_t key, const message_t * const value) {
     size_t bin = 0;
@@ -120,7 +125,7 @@ void ht_set(hashtable_t *hashtable, in_addr_t key, const message_t * const value
 }
 
 /* Retrieve a key-value pair from a hash table. */
-const message_t * ht_get( hashtable_t *hashtable, in_addr_t key ) {
+const message_t * ht_get( hashtable_t *hashtable, in_addr_t key) {
     size_t bin = 0;
     peerinfo_t *pair;
 
@@ -139,6 +144,33 @@ const message_t * ht_get( hashtable_t *hashtable, in_addr_t key ) {
         return pair->value;
     }
 
+}
+
+/* Remove an entry from a hash table. (by key) */
+void ht_remove(hashtable_t * hashtable, in_addr_t key) {
+    size_t bin = 0;
+    peerinfo_t *next = NULL;
+    peerinfo_t *last = NULL;
+
+    bin = ht_hash( hashtable, key );
+
+    next = hashtable->table[ bin ];
+
+    while( next != NULL && (key > next->key)) {
+        last = next;
+        next = next->next;
+    }
+
+    /* If there's the entry, remove the entry. */
+    if( next != NULL && key == next->key) {
+        if(hashtable->table[bin] == next)
+            hashtable->table[bin] = next->next;
+        else
+            last->next = next->next;
+
+        /* Crush the pair we grew earlier. */
+        ht_crushpair(next);
+    }
 }
 
 in_addr_t get_next_key(hashtable_iterator_t* it) {
