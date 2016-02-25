@@ -84,6 +84,8 @@ extern uint32_t current_cluster_size;
 extern uint32_t mastery_rank; // my rank
 extern uint32_t cluster_master;
 
+extern time_t expiration_timeout;
+
 int create_and_bind (void);
 int listener (void *);
 

@@ -29,6 +29,9 @@ uint32_t cluster_master;
 uint64_t wr_disable_threshold;
 uint64_t wr_enable_threshold;
 
+/* Timeout for data expiration */
+time_t expiration_timeout=30;
+
 /* listen, receive */
 int listener (void *arg)
 {
@@ -77,10 +80,6 @@ int listener (void *arg)
                 case MSG_UPDATE:
                     printf("UPDATE\n");
                     ht_set(messages,key.s_addr,msg);
-                    mr=get_message_mastery(msg);
-                    printf("Master(%u), Him('%u') and I('%u').\n",cluster_master,mr,mastery_rank);
-                    if(mr>cluster_master) /* determing master */
-                        cluster_master=mr;
                     break;
                 case MSG_WR_ON:
                     printf("WR_ON: Enabling waiting room\n");
@@ -99,17 +98,31 @@ int listener (void *arg)
             }
         } else
             printf("Message decoding failure.\n");
-        printf("Master('%u') and  I('%u').\n",cluster_master,mastery_rank);
 
-        /* We got a message (valid/invalid, no matter */
-        if(mastery_rank==cluster_master) {
-            hashtable_iterator_t * it=get_iterator(messages);
-            total=0;
-            count=0;
-            while((key.s_addr=it->next(it))!=0) {
-                total+=get_message_int64_value(ht_get(messages, key.s_addr));
+        /* We got a message (valid/invalid, no matter) */
+        hashtable_iterator_t * it=get_iterator(messages);
+        time_t cts = time(NULL);
+        total=0;
+        count=0;
+        cluster_master=0;
+        while((key.s_addr=it->next(it))!=0) {
+            const message_t* m=ht_get(messages, key.s_addr);
+            if(cts-get_message_timestamp(m) > expiration_timeout) { /* invalidation check */
+                ht_remove(messages, key.s_addr);
+                inet_ntop(AF_INET, (void *)&key, hbuf, NI_MAXHOST-1);
+                printf("Invalidating data for host %s\n", hbuf);
+            } else {
+                mr=get_message_mastery(m);
+                if(mr>cluster_master) /* determing master */
+                    cluster_master=mr;
+                total+=get_message_int64_value(m);
                 ++count;
             }
+        }
+
+        printf("Master('%u') and  I('%u').\n",cluster_master,mastery_rank);
+
+        if(mastery_rank==cluster_master) {
             printf("Cluster Average: %" PRId64 "\n", (total/count));
             if(waiting_room_status==WAITING_ROOM_DISABLED && (total/count)>=wr_enable_threshold) {
                 printf("Send Enable message\n");
