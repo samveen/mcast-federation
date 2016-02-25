@@ -76,7 +76,7 @@ peerinfo_t *ht_newpair(in_addr_t key, const message_t * const value ) {
     return newpair;
 }
 
-void ht_crushpair(peerinfo_t *pair) {
+void ht_crush(peerinfo_t *pair) {
     deep_free(pair->value);  // We always use local copies
     free(pair);
 }
@@ -149,27 +149,27 @@ const message_t * ht_get( hashtable_t *hashtable, in_addr_t key) {
 /* Remove an entry from a hash table. (by key) */
 void ht_remove(hashtable_t * hashtable, in_addr_t key) {
     size_t bin = 0;
-    peerinfo_t *next = NULL;
+    peerinfo_t *pair = NULL;
     peerinfo_t *last = NULL;
 
     bin = ht_hash( hashtable, key );
 
-    next = hashtable->table[ bin ];
+    pair = hashtable->table[ bin ];
 
-    while( next != NULL && (key > next->key)) {
-        last = next;
-        next = next->next;
+    while( pair != NULL && (key > pair->key)) {
+        last = pair;
+        pair = pair->next;
     }
 
     /* If there's the entry, remove the entry. */
-    if( next != NULL && key == next->key) {
-        if(hashtable->table[bin] == next)
-            hashtable->table[bin] = next->next;
+    if( pair != NULL && key == pair->key) {
+        if(hashtable->table[bin] == pair)
+            hashtable->table[bin] = pair->next;
         else
-            last->next = next->next;
+            last->next = pair->next;
 
         /* Crush the pair we grew earlier. */
-        ht_crushpair(next);
+        ht_crush(pair);
     }
 }
 
