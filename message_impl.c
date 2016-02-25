@@ -130,6 +130,10 @@ int64_t get_message_int64_value(const message_t* const msg) {
     return (msg->Connections);
 }
 
+time_t get_message_timestamp(const message_t* const msg) {
+    return (msg->mtimestamp);
+}
+
 void dump_message_to_stdout(const message_t * const message) {
     if (message!=NULL)
         printf("Connections: %" PRId64 ", Reading: %" PRId64 ", Writing: %" PRId64 ", Waiting: %" PRId64 "\n", message->Connections, message->Reading, message->Reading, message->Waiting);
